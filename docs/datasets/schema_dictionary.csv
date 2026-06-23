@@ -1,0 +1,20 @@
+File,Column,Type,Description,Useful For Harbinger?,Signal Category
+cluster_job_log,status,String,Final job state (Pass/Failed/Killed),Yes (Target variable),Label
+cluster_job_log,vc,String,Virtual cluster assigned,Maybe,Infrastructure
+cluster_job_log,jobid,String,Unique identifier for job,Yes,Infrastructure
+cluster_job_log,attempts,Integer,Number of times attempted,Yes,Label
+cluster_job_log,submitted_time,Datetime,When job was submitted,Yes,Time
+cluster_job_log,user,String,Anonymized user identifier,No,Identity
+cluster_gpu_util,time,Datetime,Per-minute timestamp,Yes,Time
+cluster_gpu_util,machineId,String,Unique machine identifier,Yes,Infrastructure
+cluster_gpu_util,gpu[0-7]_util,Float,Utilization percentage,Yes,GPU
+cluster_cpu_util,time,Datetime,Per-minute timestamp,Yes,Time
+cluster_cpu_util,machine_id,String,Unique machine identifier,Yes,Infrastructure
+cluster_cpu_util,cpu_util,Float,Overall CPU utilization,Yes,CPU
+cluster_mem_util,time,Datetime,Per-minute timestamp,Yes,Time
+cluster_mem_util,machine_id,String,Unique machine identifier,Yes,Infrastructure
+cluster_mem_util,mem_total,Float,Total memory available,Yes,Memory
+cluster_mem_util,mem_free,Float,Free memory available,Yes,Memory
+cluster_machine_list,machineId,String,Unique machine identifier,Yes,Infrastructure
+cluster_machine_list,number of GPUs,Integer,Total GPUs in machine,Yes,Infrastructure
+cluster_machine_list,single GPU mem,String,VRAM capacity per GPU,Yes,Infrastructure
