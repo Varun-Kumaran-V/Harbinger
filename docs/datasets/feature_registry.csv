@@ -1,0 +1,13 @@
+Feature Name,Category,Source,Type,Module
+gpu_util,Raw,Philly,Continuous,Prediction
+cpu_util,Raw,Philly,Continuous,Prediction
+mem_pressure,Raw,Philly,Continuous,Prediction
+gpu_count,Raw,Philly,Categorical,Impact
+temperature,Synthetic,Generator,Continuous,Prediction
+ecc_event,Synthetic,Generator,Binary,Prediction
+warning_window,Synthetic,Generator,Binary,Prediction
+network_state,Synthetic,Generator,Categorical,Prediction
+throughput_factor,Synthetic,Generator,Continuous,Impact
+checkpoint_event,Synthetic,Generator,Binary,Impact
+last_checkpoint_time,Synthetic,Generator,Continuous,Impact
+recovery_loss_potential,Derived,Checkpoint,Continuous,Impact
