@@ -1,0 +1,6 @@
+Missing Signal,Why Needed,Derived From (Philly Base),Generation Rule,Used As
+Temperature,Required to model physical hardware stress and thermal throttling.,gpu[0-7]_util/cpu_util,Base temp + (Load % * Factor). Inject spikes preceding failure events.,Feature
+ECC Errors,Critical leading indicator for permanent GPU/Memory faults.,status (Failed)/machineId,Sparse counts heavily clustered in the 1-6 hour window preceding a known failure.,Feature
+Network Degradation,Simulates cluster-level switch failures or bandwidth starvation.,gpu_util drops across same vc,Inject high latency metrics during periods of unexplained utilization drops.,Feature
+Checkpoint Events,Required to calculate impact estimation (wasted compute).,submitted_time/jobid,Inject regular intervals (e.g. every 4 hours). Wasted = Failure Time - Last Checkpoint.,Mitigation Anchor
+Pre-Failure Warning Window,The target variable for the predictive model.,status (Failed)/time,Sliding boolean window (e.g. 30 mins) prior to exact failure timestamp.,Target Label

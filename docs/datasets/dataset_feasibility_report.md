@@ -1,13 +1,16 @@
 # Dataset Feasibility Report: Microsoft Philly Trace
 
 ## Dataset Summary
-The Microsoft Philly Trace is a 6.6 GB (uncompressed) log dataset containing details for 117,325 deep learning jobs and corresponding cluster hardware utilization metrics. 
+
+The Microsoft Philly Trace is a 6.6 GB (uncompressed) log dataset containing details for 117,325 deep learning jobs and corresponding cluster hardware utilization metrics.
 
 ## Known Issues
+
 * **Trailing Commas:** The utilization CSV files (e.g., `cluster_gpu_util`) contain trailing commas on data rows but not on header rows. This causes standard `pd.read_csv()` parsing to fail. A custom chunked CSV loader will be required.
 * **Memory Constraints:** The dataset is too large for naive in-memory ingestion. Attempting to load `cluster_job_log` via standard JSON methods caused a critical system RAM overflow. Strict chunked processing (e.g., `ijson`) is mandatory.
 
 ## Signals Available
+
 * Job status (Pass, Failed, Killed)
 * Job attempts / retry counts
 * Per-minute GPU utilization
@@ -16,6 +19,7 @@ The Microsoft Philly Trace is a 6.6 GB (uncompressed) log dataset containing det
 * Machine inventory and GPU capacity mapping
 
 ## Signals Missing
+
 * Hardware temperature telemetry
 * ECC memory errors
 * Specific checkpoint events
@@ -23,6 +27,15 @@ The Microsoft Philly Trace is a 6.6 GB (uncompressed) log dataset containing det
 * Network/switch telemetry
 
 ## Harbinger Impact
+
 * **Can use directly:** Job outcome labels, base hardware utilization time series, and machine mappings.
 * **Can derive:** Job failure history, platform retry patterns, and resource starvation indicators.
 * **Must simulate:** Because temperature, ECC errors, and network telemetry are missing, these critical Harbinger failure signals must be artificially simulated and injected during later phases.
+
+## Dataset Strategy
+
+* **Primary Dataset:** Microsoft Philly
+* **Supporting Datasets:** Alibaba, Helios
+* **Synthetic Components:** Temperature telemetry, ECC telemetry, Network degradation, Checkpoint failures
+
+**Reason:** Large public datasets exceed local hardware constraints (e.g., Alibaba's 280 GB footprint) and natively lack the complete array of physical hardware failure signals required by Harbinger. Synthetic signal augmentation remains mathematically necessary regardless of the foundational dataset choice. Therefore, prioritizing the simulation architecture around the Philly core is the optimal path forward.
