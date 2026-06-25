@@ -2,68 +2,67 @@ import pandas as pd
 import numpy as np
 import os
 
-def generate_unified_dataset(total_minutes=3000, warning_horizon=180):
+def generate_risk_based_dataset(total_minutes=10000, warning_horizon=180):
     """
-    Generates the canonical training dataset merging all Phase 2 signals.
-    Simulates a continuous timeline with multiple failure/recovery cycles.
+    Phase 3C.5: Causal Inversion.
+    Simulates a cluster using a Hidden Risk Engine to decouple load from guaranteed failure.
     """
     np.random.seed(42)
     data = []
     
-    transitions = {1.0: [0.98, 0.02, 0.00], 0.7: [0.05, 0.90, 0.05], 0.4: [0.00, 0.05, 0.95]}
-    net_state = 1.0
-    impact_factors = {1.0: 1.00, 0.7: 0.85, 0.4: 0.60}
-    last_ckpt = 0
-    base_ckpt_interval = 120
+    # Initial States
+    gpu_util = 50.0
+    cpu_util = 40.0
+    mem_pressure = 50.0
     prev_ecc = 0
+    net_state = 1.0
     
-    # Simulate three distinct node crashes over the timeline
-    failure_points = [1000, 2000, 3000]
+    failures = []
+    
+    print(f"Simulating {total_minutes} minutes of cluster runtime...")
     
     for minute in range(total_minutes):
-        # 1. Target Label (Warning Window) - check if near ANY failure point
-        warning_window = 0
-        for fp in failure_points:
-            if (fp - warning_horizon) <= minute <= fp:
-                warning_window = 1
-                break
-
-        # 2. Base Utilizations
-        if warning_window == 0:
-            gpu_util = np.random.uniform(40, 80)
-            cpu_util = np.random.uniform(20, 60)
-            mem_pressure = np.random.uniform(30, 60)
+        # 1. Stochastic Load Generation (Random Walks)
+        # Allows for long periods of 95%+ utilization WITHOUT forcing a failure
+        rand_step = np.random.rand()
+        if rand_step < 0.05:
+            gpu_util = np.random.uniform(85, 100) # Jump to heavy load
+        elif rand_step < 0.10:
+            gpu_util = np.random.uniform(10, 40)  # Drop to idle
         else:
-            gpu_util = np.random.uniform(85, 100)
-            cpu_util = np.random.uniform(60, 90)
-            mem_pressure = np.random.uniform(70, 95)
+            gpu_util = np.clip(gpu_util + np.random.normal(0, 3), 0, 100) # Normal drift
             
-        # 3. Synthetic Temperature
+        cpu_util = np.clip(gpu_util * 0.7 + np.random.normal(0, 10), 0, 100)
+        mem_pressure = np.clip(gpu_util * 0.8 + np.random.normal(0, 5), 0, 100)
+        
+        # 2. Temperature
         temp = 40.0 + (gpu_util * 0.45) + (cpu_util * 0.10) + (mem_pressure * 0.05) + np.random.uniform(-1.0, 1.0)
         
-        # 4. Synthetic ECC Errors
+        # 3. ECC Errors (Rare, driven by stress)
         stress = min(max((0.7 * (gpu_util / 100.0)) + (0.3 * (mem_pressure / 100.0)), 0.0), 1.0)
-        p_ecc = 0.0005 + (0.01 * (stress ** 3)) + (0.03 if warning_window else 0.0) + (0.15 if prev_ecc > 0 else 0.0)
+        p_ecc = 0.0001 + (0.005 * (stress ** 3)) + (0.15 if prev_ecc > 0 else 0.0)
         ecc_event = 1 if np.random.random() < p_ecc else 0
         prev_ecc = ecc_event
         
-        # 5. Synthetic Network Degradation
-        net_state = np.random.choice([1.0, 0.7, 0.4], p=transitions[net_state])
-        throughput = gpu_util * impact_factors[net_state]
+        # 4. Network
+        if np.random.rand() < 0.02:
+            net_state = np.random.choice([1.0, 0.7, 0.4], p=[0.8, 0.15, 0.05])
+        throughput = gpu_util * net_state
         
-        # 6. Synthetic Checkpoints & Recovery Loss
-        current_ckpt_interval = 30 if warning_window else base_ckpt_interval
-        ckpt_event = 0
-        if minute > 0 and (minute - last_ckpt) >= current_ckpt_interval:
-            ckpt_event = 1
-            last_ckpt = minute
-            
-        # Reset checkpoint anchor after a failure occurs to simulate job restart
-        if minute in failure_points:
-            last_ckpt = minute
-            
-        recovery_loss = minute - last_ckpt
+        # 5. HIDDEN LATENT RISK ENGINE
+        base_risk = 0.0001
+        load_risk = 0.0005 * (stress ** 4) # Only extreme stress adds risk
+        temp_risk = 0.005 if temp > 85 else 0.0
+        ecc_risk = 0.02 if ecc_event == 1 else 0.0 # High risk multiplier
         
+        latent_risk_score = base_risk + load_risk + temp_risk + ecc_risk
+        
+        # 6. Failure Trigger
+        if np.random.random() < latent_risk_score:
+            failures.append(minute)
+            gpu_util = 10.0 # Node crashes and restarts at low load
+            prev_ecc = 0
+            
         data.append({
             'minute': minute,
             'gpu_util': round(gpu_util, 2),
@@ -73,15 +72,22 @@ def generate_unified_dataset(total_minutes=3000, warning_horizon=180):
             'ecc_event': ecc_event,
             'network_state': net_state,
             'throughput_factor': round(throughput, 2),
-            'recovery_loss_potential': recovery_loss,
-            'warning_window': warning_window
+            'warning_window': 0 # Placeholder, labeled retrospectively
         })
         
-    return pd.DataFrame(data)
+    df = pd.DataFrame(data)
+    
+    # 7. Retrospective Labeling (The Warning Window)
+    for fp in failures:
+        start_window = max(0, fp - warning_horizon)
+        df.loc[start_window:fp, 'warning_window'] = 1
+        
+    return df, len(failures)
 
 if __name__ == "__main__":
-    print("Building canonical training dataset (Multi-Failure Simulation)...")
-    df = generate_unified_dataset()
-    os.makedirs('data/processed', exist_ok=True)
-    df.to_csv('data/processed/training_dataset.csv', index=False)
-    print("Done.")
+    df, fail_count = generate_risk_based_dataset(10000)
+    out_path = 'data/processed/training_dataset.csv'
+    df.to_csv(out_path, index=False)
+    
+    print(f"Dataset generated with {fail_count} stochastic failures.")
+    print(f"Saved to {out_path}")
