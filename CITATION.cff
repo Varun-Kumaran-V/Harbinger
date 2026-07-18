@@ -2,34 +2,36 @@ cff-version: 1.2.0
 
 title: "Harbinger: Decision-Oriented AI Infrastructure Failure Prediction Framework"
 
-message: >
-  If you use Harbinger in your research, please cite this repository using the
-  metadata below.
+message: "If you use this repository in your research, please cite it using the metadata below."
 
 type: software
 
 authors:
+authors:
   - given-names: "VARUN KUMARAN"
     family-names: "VENKATARAMAN"
 
-abstract: >
-  Harbinger is a research framework for decision-oriented AI infrastructure
-  failure prediction. The framework combines synthetic telemetry generation,
-  temporal feature engineering, machine learning, recovery loss estimation,
-  intervention cost modelling, and decision optimization to recommend
-  operational actions that minimize expected computational loss.
+repository-code: "https://github.com/Varun-Kumaran-V/Harbinger"
+
+license: MIT
+
+version: "v1.0-paper"
+
+date-released: 2026-07-18
 
 keywords:
   - artificial intelligence
   - machine learning
-  - gpu computing
   - failure prediction
   - predictive maintenance
   - distributed systems
-  - synthetic telemetry
+  - gpu computing
   - checkpoint optimization
+  - synthetic telemetry
 
-license: MIT
-
-repository-code: "https://github.com/Varun-Kumaran-V/Harbinger"
-
+abstract: >
+  Harbinger is a research framework for decision-oriented AI infrastructure
+  failure prediction. The framework integrates synthetic telemetry generation,
+  temporal feature engineering, predictive modelling, recovery loss estimation,
+  intervention cost modelling, and adaptive checkpoint recommendation to
+  minimize expected operational cost during AI training workloads.
