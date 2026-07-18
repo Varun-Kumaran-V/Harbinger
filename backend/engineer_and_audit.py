@@ -4,10 +4,10 @@ File: engineer_and_audit.py
 
 Purpose
 -------
-Performs temporal feature engineering on the synthetic training dataset and
-evaluates the predictive expressiveness of the engineered features using
-multiple baseline machine learning models. This stage transforms raw simulated
-telemetry into features suitable for downstream failure-risk prediction.
+Transforms the canonical synthetic training dataset into a temporally
+engineered feature set and evaluates the predictive expressiveness of the
+engineered features using multiple baseline machine learning models under a
+strict temporal train/test split.
 
 Inputs
 ------
@@ -65,6 +65,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score
 import warnings
 warnings.filterwarnings('ignore')
@@ -114,22 +115,28 @@ df.to_csv('data/processed/engineered_training_dataset.csv', index=False)
 print("Engineered dataset saved to data/processed/engineered_training_dataset.csv\n")
 
 # --- MODEL EXPRESSIVENESS AUDIT ---
-print("VALIDATION: Engineered Model Expressiveness (Temporal Split)")
-train = df[df['minute'] <= 7000]
-test = df[df['minute'] > 7000]
+print("VALIDATION: Engineered Model Expressiveness (Strict Temporal Split)")
 
-# Exclude target, hidden risk, minute, and impact/checkpoint signals
+split_idx = int(len(df) * 0.7)
+train = df.iloc[:split_idx]
+test = df.iloc[split_idx:]
+
 exclude = ['warning_window', 'latent_risk_score', 'minute', 'checkpoint_event', 'recovery_loss_potential']
 features = [c for c in df.columns if c not in exclude]
 
-X_train, y_train = train[features], train['warning_window']
-X_test, y_test = test[features], test['warning_window']
+X_train_raw, y_train = train[features], train['warning_window']
+X_test_raw, y_test = test[features], test['warning_window']
+
+# NEW: Scale the features so Logistic Regression and Gradient Boosting can converge
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train_raw)
+X_test = scaler.transform(X_test_raw)
 
 models = {
     "Logistic Regression": LogisticRegression(max_iter=1000),
     "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
     "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42),
-    "Gradient Boosting": HistGradientBoostingClassifier(random_state=42) # Scikit's native XGBoost equivalent
+    "Gradient Boosting": HistGradientBoostingClassifier(random_state=42)
 }
 
 for name, model in models.items():
