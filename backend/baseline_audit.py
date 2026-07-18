@@ -57,7 +57,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 def run_baseline_audit():
-    print("--- PHASE 2.6: BASELINE MODEL EXPRESSIVENESS AUDIT ---")
+    print("--- BASELINE MODEL EXPRESSIVENESS AUDIT ---")
     print("Loading engineered dataset...")
     
     try:

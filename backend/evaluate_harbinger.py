@@ -62,7 +62,7 @@ import pandas as pd
 import numpy as np
 import os
 
-print("--- PHASE 2.1: EXPERIMENTAL EVALUATION FRAMEWORK ---")
+print("--- EXPERIMENTAL EVALUATION FRAMEWORK ---")
 print("Initializing Cluster Simulation Harness...\n")
 
 # Set seed for reproducible research
@@ -152,5 +152,5 @@ print(f"\n*** Total Expected GPU-Hours Saved by Harbinger vs Standard Baseline: 
 os.makedirs('outputs', exist_ok=True)
 df_results.to_csv('outputs/evaluation_results.csv', index=False)
 with open('outputs/cluster_impact_summary.md', 'w') as f:
-    f.write("# Phase 2.1: Cluster-Scale Impact\n\n")
+    f.write("# Cluster-Scale Impact\n\n")
     f.write(markdown_table)

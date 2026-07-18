@@ -76,8 +76,8 @@ import os
 
 def generate_temperature(gpu_util, cpu_util, mem_pressure):
     """
-    Generates a physically plausible synthetic GPU temperature based on system load.
-    Phase 1 Version: Physics-inspired heuristic.
+    Generates a physically plausible synthetic GPU temperature using a
+    physics-inspired heuristic model.
     """
     base_temp = 40.0
     gpu_factor = 0.45

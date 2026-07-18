@@ -62,7 +62,7 @@ warnings.filterwarnings('ignore')
 
 df = pd.read_csv('data/processed/training_dataset.csv')
 
-print("--- PHASE 2.7: LEARNABILITY VALIDATION ---\n")
+print("--- LEARNABILITY VALIDATION ---")
 
 # Validation 1: Risk Calibration
 print("VALIDATION 1: Risk Calibration (Latent Risk vs Warning Window Rate)")

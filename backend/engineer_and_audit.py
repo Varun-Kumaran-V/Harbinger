@@ -57,7 +57,7 @@ from sklearn.metrics import roc_auc_score
 import warnings
 warnings.filterwarnings('ignore')
 
-print("--- PHASE 1.1: TEMPORAL FEATURE ENGINEERING ---")
+print("--- TEMPORAL FEATURE ENGINEERING ---")
 print("Loading cumulative dataset...")
 df = pd.read_csv('data/processed/training_dataset.csv')
 

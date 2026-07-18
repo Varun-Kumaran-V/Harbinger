@@ -74,7 +74,7 @@ import os
 import warnings
 warnings.filterwarnings('ignore')
 
-print("--- PHASE 2.8: BASELINE CONSOLIDATION ---\n")
+print("--- BASELINE MODEL CONSOLIDATION ---")
 print("Loading engineered dataset...")
 df = pd.read_csv('data/processed/engineered_training_dataset.csv')
 

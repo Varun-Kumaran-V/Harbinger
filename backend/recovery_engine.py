@@ -118,7 +118,7 @@ class RecoveryLossEngine:
         return pd.DataFrame(results)
 
 if __name__ == "__main__":
-    print("--- PHASE 2.3: RECOVERY LOSS ENGINE ---\n")
+    print("--- RECOVERY LOSS ENGINE ---")
     
     # Simulating a job on 8 GPUs that fails at minute 850
     engine = RecoveryLossEngine(gpu_count=8)
