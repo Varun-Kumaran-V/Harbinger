@@ -1,104 +1,286 @@
 # Harbinger
 
-Harbinger is a research project investigating predictive reliability for AI training clusters. The project focuses on identifying impending failures before they occur, estimating their operational impact, and supporting cost-aware mitigation decisions.
+**Harbinger** is a decision-oriented AI infrastructure management framework that combines synthetic infrastructure simulation, machine learning, and operational cost optimization to predict failures and recommend economically optimal interventions for distributed GPU training clusters.
 
-This repository contains the research artifacts, source code, datasets, and documentation developed during the project. As the research progresses, the repository and its documentation will evolve to reflect the implemented components.
+Unlike conventional predictive maintenance systems that stop after estimating the probability of failure, Harbinger extends the pipeline by estimating recovery impact, intervention cost, and recommending the operational action that minimizes expected cost.
 
 ---
 
-# Repository Status
+# Repository Overview
 
-**Current Development Stage**
+Harbinger is organized as a complete research pipeline consisting of five interconnected subsystems:
 
-Prediction architecture and supporting research infrastructure are under active development.
+1. **Synthetic Signal Generation**
 
-The repository currently contains:
+   - Generates realistic infrastructure telemetry including temperature, ECC activity, network behaviour, and checkpoint events.
+2. **Dataset Construction & Feature Engineering**
 
-* Project source code
-* Research documentation
-* Dataset documentation
-* Processed datasets
-* Model design documents
-* Experimental outputs
+   - Integrates synthetic signals into structured datasets suitable for machine learning.
+3. **Baseline Validation**
 
-Implementation and documentation will continue to evolve throughout subsequent development phases.
+   - Establishes conventional machine learning benchmarks for scientific comparison.
+4. **Decision Engine**
+
+   - Combines prediction outputs with recovery and intervention cost models to recommend economically optimal operational actions.
+5. **Evaluation & Reporting**
+
+   - Measures operational effectiveness using metrics such as recovery loss, GPU-hours saved, and total operational cost.
+
+---
+
+# Repository Architecture
+
+```
+Synthetic Signal Generation
+            │
+            ▼
+Dataset Construction
+            │
+            ▼
+Feature Engineering
+            │
+            ▼
+Baseline Validation
+            │
+            ▼
+Decision Engine
+            │
+            ▼
+Operational Evaluation
+```
 
 ---
 
 # Repository Structure
 
-```text
-Harbinger/
-├── backend/          # Backend source code
-├── data/             # Project datasets
-├── docs/             # Project documentation
-├── models/           # Design documentation
-├── notebooks/        # Research notebooks
-├── outputs/          # Generated outputs and reports
-├── tests/            # Test directory
-├── LICENSE
-├── README.md
-└── .gitignore
+```
+Harbinger
+│
+├── backend/
+│   ├── generators/
+│   ├── build_training_dataset.py
+│   ├── engineer_and_audit.py
+│   ├── baseline_audit.py
+│   ├── tune_baselines.py
+│   ├── harbinger_pipeline.py
+│   ├── recovery_engine.py
+│   ├── intervention_cost_model.py
+│   ├── evaluate_harbinger.py
+│   └── learnability_audit.py
+│
+├── data/
+│   ├── processed/
+│   └── trace-data/
+│
+├── docs/
+│   ├── architecture.md
+│   ├── reproducibility.md
+│   ├── datasets/
+│   └── modules/
+│
+├── models/
+├── outputs/
+└── tests/
 ```
 
-Only the top-level repository organization is documented here. Detailed descriptions of individual modules will be added after they have been analyzed and documented.
+---
+
+# Execution Pipeline
+
+The repository follows a sequential workflow.
+
+## 1. Generate the Synthetic Dataset
+
+```bash
+python backend/build_training_dataset.py
+```
+
+Produces:
+
+- `training_dataset.csv`
+
+---
+
+## 2. Engineer Temporal Features
+
+```bash
+python backend/engineer_and_audit.py
+```
+
+Produces:
+
+- `engineered_training_dataset.csv`
+
+---
+
+## 3. Validate Dataset Learnability
+
+```bash
+python backend/learnability_audit.py
+```
+
+Verifies that the generated dataset contains meaningful predictive patterns.
+
+---
+
+## 4. Evaluate Conventional Baselines
+
+```bash
+python backend/baseline_audit.py
+```
+
+Provides initial baseline performance.
+
+---
+
+## 5. Optimize Baseline Models
+
+```bash
+python backend/tune_baselines.py
+```
+
+Produces:
+
+- `baseline_consolidation_report.md`
+
+---
+
+## 6. Execute the Decision Pipeline
+
+```bash
+python backend/harbinger_pipeline.py
+```
+
+Integrates:
+
+- prediction
+- recovery estimation
+- intervention cost modelling
+- operational decision making
+
+---
+
+## 7. Evaluate Harbinger
+
+```bash
+python backend/evaluate_harbinger.py
+```
+
+Produces:
+
+- `evaluation_results.csv`
+- `cluster_impact_summary.md`
+- `recovery_loss_report.md`
 
 ---
 
 # Documentation
 
-Project documentation is organized under the `docs/` directory.
+The repository documentation is organized into three complementary sections.
 
-Additional documentation will be incorporated as repository components are reviewed and verified.
+## Architecture
 
----
+High-level overview of the complete system.
 
-# Models
-
-The `models/` directory contains design documents describing various components of the Harbinger system.
-
-These documents represent the current design specifications and may evolve alongside implementation.
+```
+docs/architecture.md
+```
 
 ---
 
-# Data
+## Module Documentation
 
-The repository contains processed datasets and supporting dataset documentation.
+Detailed explanations of each subsystem.
 
-Large raw datasets are intentionally excluded from version control where appropriate.
+```
+docs/modules/
 
-Dataset preparation procedures and acquisition instructions will be documented as the corresponding pipeline components are analyzed.
+├── synthetic_signal_generation.md
+├── dataset_construction.md
+├── baseline_validation.md
+├── decision_engine.md
+└── evaluation_pipeline.md
+```
+
+---
+
+## Dataset Documentation
+
+Reference material describing generated signals, features, and schema.
+
+```
+docs/datasets/
+
+├── feature_registry.csv
+├── feature_taxonomy.md
+├── schema_dictionary.csv
+├── signal_coverage_matrix.csv
+└── synthetic_signal_design.md
+```
+
+---
+
+## Model Design Documents
+
+Design specifications for the prediction and decision components.
+
+```
+models/
+
+├── prediction_design.md
+├── risk_engine_design.md
+├── training_dataset_design.md
+└── modeling_readiness.md
+```
 
 ---
 
 # Outputs
 
-The repository includes generated research artifacts produced during development.
+Example generated artifacts are stored in:
 
-These outputs support experimentation, analysis, and evaluation performed throughout the project.
+```
+outputs/
+```
 
-Detailed descriptions of each generated artifact will be added after the corresponding source files have been documented.
+These include:
+
+- evaluation reports
+- baseline summaries
+- generated datasets
+- plots
+- sample outputs
+
+---
+
+# Research Contribution
+
+Traditional failure prediction systems answer:
+
+> **Will a failure occur?**
+
+Harbinger addresses the broader operational question:
+
+> **Given the probability of failure, the expected recovery loss, and the cost of intervention, what action minimizes the total operational cost?**
+
+This shift from prediction to decision optimization forms the central contribution of the project.
 
 ---
 
 # Reproducibility
 
-This repository is being prepared as a reproducible academic software repository.
+The repository generates synthetic infrastructure telemetry and datasets internally.
 
-Execution instructions, software dependencies, environment specifications, and the complete experimental workflow will be documented after the corresponding implementation files have been reviewed.
+The complete workflow for reproducing the datasets, baseline experiments, and evaluation pipeline is documented in:
+
+```
+docs/reproducibility.md
+```
 
 ---
 
 # License
 
-This project is released under the MIT License.
+This project is distributed under the terms of the MIT License.
 
-See the `LICENSE` file for the complete license text.
-
----
-
-# Project Evolution
-
-The documentation within this repository is maintained incrementally.
-
-As additional source files are reviewed and documented, this README will be updated to accurately reflect the implemented architecture, execution workflow, dependencies, datasets, and generated outputs.
+See the `LICENSE` file for details.

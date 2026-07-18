@@ -1,0 +1,12 @@
+Harbinger Requirement,Available,Dataset,Source Signal,Action Required,Notes
+Job Failure Label,Yes,Philly,status,Use Directly,
+Retry History,Yes,Philly,attempts,Use Directly,
+GPU Utilization,Yes,Philly,gpu0_util...gpu7_util,Use Directly,
+CPU Utilization,Yes,Philly,cpu_util,Use Directly,
+Memory Utilization,Yes,Philly,mem_free/mem_total,Use Directly,
+Machine Infrastructure,Yes,Philly,machineId/gpu counts,Use Directly,
+GPU Temperature,No,None,N/A,Simulate,
+ECC Errors,No,None,N/A,Simulate,
+Checkpoint Events,No,None,N/A,Derive/Simulate,
+Node Health,Partial,Philly,machine inventory,Derive,
+Network Health,No,None,N/A,Need Additional Dataset,
