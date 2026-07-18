@@ -118,7 +118,7 @@ class RecoveryLossEngine:
         return pd.DataFrame(results)
 
 if __name__ == "__main__":
-    print("--- PHASE 4.1: RECOVERY LOSS ENGINE ---\n")
+    print("--- PHASE 2.3: RECOVERY LOSS ENGINE ---\n")
     
     # Simulating a job on 8 GPUs that fails at minute 850
     engine = RecoveryLossEngine(gpu_count=8)
@@ -138,5 +138,5 @@ if __name__ == "__main__":
     # Save output for documentation
     os.makedirs('outputs', exist_ok=True)
     with open('outputs/recovery_loss_report.md', 'w') as f:
-        f.write("# Phase 4.1: Recovery Loss Counterfactuals\n\n")
+        f.write("# Phase 2.3: Recovery Loss Counterfactuals\n\n")
         f.write(markdown_table)

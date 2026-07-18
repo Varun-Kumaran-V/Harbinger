@@ -155,7 +155,7 @@ class ActionTranslator:
         return json.dumps(output, indent=2)
 
 if __name__ == "__main__":
-    print("--- PHASE 5: END-TO-END DECISION PIPELINE ---\n")
+    print("--- PHASE 2.0: END-TO-END DECISION PIPELINE ---\n")
     
     # Initialize Pipeline Modules
     adapter = PredictionAdapter()

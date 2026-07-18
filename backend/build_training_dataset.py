@@ -148,7 +148,7 @@ def generate_unified_dataset(max_minutes=10000, warning_horizon=180):
     return df
 
 if __name__ == "__main__":
-    print("Building canonical training dataset (Tuned Causal Inversion)...")
+    print("--- PHASE 1.0: Building canonical training dataset (Tuned Causal Inversion) ---")
     df = generate_unified_dataset()
     
     os.makedirs('data/processed', exist_ok=True)

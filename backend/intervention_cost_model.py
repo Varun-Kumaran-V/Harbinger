@@ -102,7 +102,7 @@ class InterventionCostModel:
         return df
 
 if __name__ == "__main__":
-    print("--- PHASE 4.3: INTERVENTION COST MODEL ---\n")
+    print("--- PHASE 2.2: INTERVENTION COST MODEL ---\n")
     
     # Scenario A: Standard Job, High Risk (P=0.85)
     model_a = InterventionCostModel(gpu_count=8)

@@ -5,9 +5,10 @@ File: engineer_and_audit.py
 Purpose
 -------
 Transforms the canonical synthetic training dataset into a temporally
-engineered feature set and evaluates the predictive expressiveness of the
-engineered features using multiple baseline machine learning models under a
-strict temporal train/test split.
+engineered feature set for downstream predictive modeling. This stage
+derives rolling statistics, event accumulation metrics, temporal trend
+features, and persistence-based features before exporting the engineered
+dataset for baseline model evaluation.
 
 Inputs
 ------
@@ -17,20 +18,16 @@ Input Files:
 Dependencies:
 - pandas
 - numpy
-- scikit-learn
 
 Outputs
 -------
 Generated Files:
 - data/processed/engineered_training_dataset.csv
 
-Console Output:
-- ROC-AUC performance of baseline prediction models.
-
 Functions
 ---------
-This script executes as a sequential pipeline and does not define user-created
-functions.
+This script executes as a sequential preprocessing pipeline and does not
+define user-created functions.
 
 Major Processing Stages
 -----------------------
@@ -39,24 +36,14 @@ Major Processing Stages
 3. Temporal trend feature generation.
 4. Persistence feature generation.
 5. Engineered dataset export.
-6. Baseline model expressiveness validation.
-
-Models
-------
-- Logistic Regression
-- Decision Tree
-- Random Forest
-- Histogram Gradient Boosting
 
 Pipeline Role
 -------------
-Training Dataset
+Canonical Training Dataset
         ↓
 Temporal Feature Engineering
         ↓
-Engineered Dataset
-        ↓
-Baseline Model Validation
+Engineered Dataset Export
 """
 
 import pandas as pd
@@ -70,7 +57,7 @@ from sklearn.metrics import roc_auc_score
 import warnings
 warnings.filterwarnings('ignore')
 
-print("--- PHASE 3D.0: TEMPORAL FEATURE ENGINEERING ---")
+print("--- PHASE 1.1: TEMPORAL FEATURE ENGINEERING ---")
 print("Loading cumulative dataset...")
 df = pd.read_csv('data/processed/training_dataset.csv')
 
@@ -113,34 +100,3 @@ drop_cols = ['net_suboptimal', 'net_severe', 'gpu_above_90', 'temp_above_85']
 df = df.drop(columns=drop_cols)
 df.to_csv('data/processed/engineered_training_dataset.csv', index=False)
 print("Engineered dataset saved to data/processed/engineered_training_dataset.csv\n")
-
-# --- MODEL EXPRESSIVENESS AUDIT ---
-print("VALIDATION: Engineered Model Expressiveness (Strict Temporal Split)")
-
-split_idx = int(len(df) * 0.7)
-train = df.iloc[:split_idx]
-test = df.iloc[split_idx:]
-
-exclude = ['warning_window', 'latent_risk_score', 'minute', 'checkpoint_event', 'recovery_loss_potential']
-features = [c for c in df.columns if c not in exclude]
-
-X_train_raw, y_train = train[features], train['warning_window']
-X_test_raw, y_test = test[features], test['warning_window']
-
-# NEW: Scale the features so Logistic Regression and Gradient Boosting can converge
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train_raw)
-X_test = scaler.transform(X_test_raw)
-
-models = {
-    "Logistic Regression": LogisticRegression(max_iter=1000),
-    "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
-    "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42),
-    "Gradient Boosting": HistGradientBoostingClassifier(random_state=42)
-}
-
-for name, model in models.items():
-    model.fit(X_train, y_train)
-    preds = model.predict_proba(X_test)[:, 1]
-    auc = roc_auc_score(y_test, preds)
-    print(f"{name:>20}: {auc:.4f} AUC")
